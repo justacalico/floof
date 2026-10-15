@@ -115,9 +115,7 @@ jobs:
         include:
           - {target: android, os: ubuntu-latest}
           - {target: linux, os: ubuntu-latest}
-          - {target: linux-arm64, os: ubuntu-24.04-arm}
           - {target: windows, os: windows-latest}
-          - {target: windows-arm64, os: windows-11-arm}
           - {target: macos, os: macos-latest}
           - {target: ios, os: macos-latest}
           - {target: web, os: ubuntu-latest}
