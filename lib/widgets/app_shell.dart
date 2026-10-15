@@ -46,7 +46,8 @@ class AppShellState extends State<AppShell> {
           children: widget.pages,
         );
         if (wide) {
-          return Column(
+          return Material(
+            child: Column(
             children: [
               if (desktop)
                 DesktopTitleBar(title: widget.title, window: widget.window),
@@ -63,6 +64,7 @@ class AppShellState extends State<AppShell> {
                 ),
               ),
             ],
+            ),
           );
         }
         return Scaffold(

@@ -53,7 +53,10 @@ class FeedService {
     final allLanes = queries;
     var fetches = 0;
     final seenLanes = <int>{};
-    while (candidates.length < batchSize && fetches < 8) {
+    BooruException? lastError;
+    while (candidates.length < batchSize &&
+        seenLanes.length < allLanes.length &&
+        fetches < 8) {
       final laneIdx = _laneCursor % allLanes.length;
       _laneCursor++;
       if (seenLanes.contains(laneIdx)) continue;
@@ -68,7 +71,8 @@ class FeedService {
           page: page,
           limit: 40,
         );
-      } on BooruException {
+      } on BooruException catch (e) {
+        lastError = e;
         continue;
       }
       _lanePages[laneIdx] = page + 1;
@@ -78,6 +82,9 @@ class FeedService {
       ));
     }
     if (candidates.isEmpty) {
+      if (lastError != null && seenLanes.length >= allLanes.length) {
+        throw lastError;
+      }
       _exhausted = true;
       return const [];
     }

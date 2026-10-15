@@ -77,9 +77,7 @@ class FloofApp extends StatelessWidget {
             localeResolutionCallback: (device, supported) {
               if (state.localeTag.isNotEmpty) return _resolveLocale();
               for (final locale in supported) {
-                if (locale.languageCode == device?.languageCode &&
-                    (locale.countryCode == null ||
-                        locale.countryCode == device?.countryCode)) {
+                if (locale.languageCode == device?.languageCode) {
                   return locale;
                 }
               }

@@ -169,7 +169,9 @@ class SearchPageState extends State<SearchPage> {
       itemCount: _results.length + (_hasMore ? 1 : 0),
       itemBuilder: (context, index) {
         if (index >= _results.length) {
-          _search(_query, page: _page + 1);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) _search(_query, page: _page + 1);
+          });
           return const Center(child: CircularProgressIndicator());
         }
         final post = _results[index];

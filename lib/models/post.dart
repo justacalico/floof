@@ -157,23 +157,23 @@ class Post {
       height > 0 ? width / height : 16 / 9;
 
   factory Post.fromJson(Map<String, dynamic> json, {String host = ''}) {
-    final files = json['files'] as Map<String, dynamic>? ?? {};
-    final meta = files['meta'] as Map<String, dynamic>? ?? {};
-    final original = files['original'] as Map<String, dynamic>? ?? {};
-    final preview = files['preview'] as Map<String, dynamic>? ?? {};
-    final sample = files['sample'] as Map<String, dynamic>? ?? {};
-    final video = files['video'] as Map<String, dynamic>? ?? {};
-    final stats = json['stats'] as Map<String, dynamic>? ?? {};
-    final score = stats['score'] as Map<String, dynamic>? ?? {};
-    final flags = json['flags'] as Map<String, dynamic>? ?? {};
+    final files = Map<String, dynamic>.from(json['files'] as Map? ?? const {});
+    final meta = Map<String, dynamic>.from(files['meta'] as Map? ?? const {});
+    final original = Map<String, dynamic>.from(files['original'] as Map? ?? const {});
+    final preview = Map<String, dynamic>.from(files['preview'] as Map? ?? const {});
+    final sample = Map<String, dynamic>.from(files['sample'] as Map? ?? const {});
+    final video = Map<String, dynamic>.from(files['video'] as Map? ?? const {});
+    final stats = Map<String, dynamic>.from(json['stats'] as Map? ?? const {});
+    final score = Map<String, dynamic>.from(stats['score'] as Map? ?? const {});
+    final flags = Map<String, dynamic>.from(json['flags'] as Map? ?? const {});
 
     String? vUrl;
     String? mp4Url;
-    final videoOriginal = video['original'] as Map<String, dynamic>?;
+    final videoOriginal = (video['original'] is Map ? Map<String, dynamic>.from(video['original']) : null);
     if (videoOriginal != null) {
       vUrl = videoOriginal['url'] as String?;
     }
-    final variants = video['variants'] as Map<String, dynamic>?;
+    final variants = (video['variants'] is Map ? Map<String, dynamic>.from(video['variants']) : null);
     final mp4 = variants?['mp4'] as Map<String, dynamic>?;
     if (mp4 != null) {
       mp4Url = mp4['url'] as String?;
@@ -187,7 +187,8 @@ class Post {
       uploaderName: json['uploader_name'] as String? ?? '',
       sources:
           (json['sources'] as List?)?.whereType<String>().toList() ?? const [],
-      tags: PostTags.fromJson(json['tags'] as Map<String, dynamic>? ?? {}),
+      tags: PostTags.fromJson(
+          Map<String, dynamic>.from(json['tags'] as Map? ?? const {})),
       fileExt: meta['ext'] as String? ?? '',
       fileSize: (meta['size'] as num?)?.toInt() ?? 0,
       duration: (meta['duration'] as num?)?.toDouble(),

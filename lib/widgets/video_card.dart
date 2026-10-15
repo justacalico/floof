@@ -61,6 +61,10 @@ class VideoCardState extends State<VideoCard> {
   void reportWatch({double? duration}) {
     if (_reported) return;
     _reported = true;
+    _report(duration);
+  }
+
+  void _report(double? duration) {
     final d = duration ??
         _controller?.value.duration.inSeconds.toDouble() ??
         widget.post.duration;
@@ -76,10 +80,7 @@ class VideoCardState extends State<VideoCard> {
 
   void _togglePlay() {
     final c = _controller;
-    if (c == null) {
-      _startPlayback();
-      return;
-    }
+    if (c == null) return;
     if (c.value.isPlaying) {
       c.pause();
       _watch.stop();
@@ -106,7 +107,18 @@ class VideoCardState extends State<VideoCard> {
 
   @override
   void dispose() {
-    reportWatch();
+    if (!_reported) {
+      _reported = true;
+      final state = widget.state;
+      final post = widget.post;
+      final watched = _watchedSeconds;
+      final d = _controller?.value.duration.inSeconds.toDouble() ??
+          widget.post.duration;
+      final completed = d != null && d > 0 && watched >= d * 0.9;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        state.recordWatch(post, watched, d, completed);
+      });
+    }
     _controller?.dispose();
     super.dispose();
   }
@@ -201,9 +213,7 @@ class VideoCardState extends State<VideoCard> {
           children: [
             Center(
               child: AspectRatio(
-                aspectRatio: c.value.aspectRatio == 0
-                    ? widget.post.aspectRatio
-                    : c.value.aspectRatio,
+                aspectRatio: c.value.aspectRatio,
                 child: VideoPlayer(c),
               ),
             ),

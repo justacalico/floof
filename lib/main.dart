@@ -31,13 +31,7 @@ Future<void> main() async {
   } on MissingPluginException {
     docsDir = Directory.systemTemp;
   }
-  String appVersion = '0.1.0';
-  try {
-    final info = await PackageInfo.fromPlatform();
-    appVersion = info.version;
-  } on MissingPluginException {
-    // keep the fallback version
-  }
+  final appVersion = await resolveAppVersion();
 
   final state = AppState(
     prefs: prefs,
@@ -49,4 +43,15 @@ Future<void> main() async {
   state.load();
 
   runApp(FloofApp(state: state, window: window));
+}
+
+Future<String> resolveAppVersion(
+    {Future<PackageInfo> Function()? infoLoader}) async {
+  final load = infoLoader ?? PackageInfo.fromPlatform;
+  try {
+    final info = await load();
+    return info.version;
+  } on MissingPluginException {
+    return '0.1.0';
+  }
 }
