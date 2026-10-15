@@ -144,9 +144,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev rpm appstream flatpak-builder elfutils curl zip
-      - name: Install Android SDK
-        if: matrix.target == 'android'
-        uses: android-actions/setup-android@v3
+
       - name: Setup Android signing
         if: matrix.target == 'android'
         id: signing
@@ -238,6 +236,7 @@ jobs:
           flutter config --enable-windows-desktop
           flutter build windows --release --build-name="$env:VERSION" --build-number="$env:BUILD_NUMBER"
           $arch = if ("${{ matrix.target }}" -eq "windows-arm64") { "arm64" } else { "x64" }
+          New-Item -ItemType Directory -Force artifacts | Out-Null
           Compress-Archive -Path "build/windows/$arch/runner/Release/*" -DestinationPath "artifacts/floof-windows-$arch.zip"
         shell: pwsh
       - name: Build macOS package
