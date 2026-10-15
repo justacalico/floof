@@ -321,7 +321,7 @@ jobs:
             ostree --repo=flatpak-merged pull-local "$d"
           done
           flatpak build-update-repo --gpg-sign="$KEYID" --gpg-homedir="$HOME/.gpg" --generate-static-deltas flatpak-merged
-          mkdir -p flatpak/key.gpg.d && gpg --export "$KEYID" > flatpak/key.gpg
+          mkdir -p flatpak/key.gpg.d && gpg --batch --homedir "$HOME/.gpg" --export "$KEYID" > flatpak/key.gpg
           sed -e "s|@GPGKEY@|$(base64 -w0 flatpak/key.gpg)|" \
               -e "s|@URL@|https://httpanimations.gitlab.io/floof/flatpak|" \
               packaging/flatpak/floof.flatpakref.in > flatpak/floof.flatpakref
