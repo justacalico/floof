@@ -26,14 +26,18 @@ rm -rf public
 gh run download "$RUN_ID" -R "$REPO" -n pages -D public
 test -f public/index.html
 
+rm -rf fp-stage
 for attempt in 1 2 3; do
-  if gh run download "$RUN_ID" -R "$REPO" -n flatpak-merged -D public/flatpak; then
+  if gh run download "$RUN_ID" -R "$REPO" -n flatpak-merged -D fp-stage; then
+    mkdir -p public/flatpak
+    cp -a fp-stage/. public/flatpak/
     echo "flatpak repo merged into public/flatpak"
     break
   fi
   echo "flatpak-merged download attempt $attempt failed" >&2
   sleep 10
 done
+rm -rf fp-stage
 
 ls public
 ls public/flatpak 2>/dev/null || true
