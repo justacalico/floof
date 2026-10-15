@@ -1,0 +1,124 @@
+{
+  "@@locale": "ru",
+  "appName": "floof",
+  "navHome": "Главная",
+  "navSearch": "Поиск",
+  "navProfiles": "Профили",
+  "navHistory": "История",
+  "navSettings": "Настройки",
+  "feedEmpty": "Здесь пока пусто. Подгрузите видео.",
+  "feedError": "Не удалось загрузить ленту.",
+  "retry": "Повторить",
+  "like": "Нравится",
+  "done": "Готово",
+  "openPost": "Открыть в браузере",
+  "doneAskTitle": "Отметить видео как завершённое. Добавить фото?",
+  "doneTakePhoto": "Сделать фото",
+  "doneSkip": "Пропустить",
+  "doneRecorded": "Отмечено как завершённое",
+  "searchHint": "Поиск по тегам, например animated canine",
+  "searchEmpty": "По этому запросу видео не найдены.",
+  "addProfile": "Добавить профиль",
+  "profileNameHint": "Имя профиля",
+  "cancel": "Отмена",
+  "create": "Создать",
+  "rename": "Переименовать",
+  "renameProfile": "Переименовать профиль",
+  "deleteProfile": "Удалить профиль",
+  "activeProfile": "Активный профиль",
+  "tapToSwitch": "Нажмите, чтобы переключиться",
+  "statsTitle": "Этот профиль",
+  "statsWatched": "Просмотрено видео: {count}",
+  "@statsWatched": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statsDone": "Завершений: {count}",
+  "@statsDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tasteTitle": "Что выучил алгоритм",
+  "tasteEmpty": "Посмотрите видео, и алгоритм узнает ваш вкус.",
+  "tasteLikes": "Нравится",
+  "tasteDislikes": "Не нравится",
+  "historyEmpty": "Истории пока нет. Посмотрите что-нибудь.",
+  "clearHistory": "Очистить историю",
+  "clearHistoryBody": "Удаляет историю просмотров и отметки о завершении для этого профиля.",
+  "clear": "Очистить",
+  "historyCleared": "История очищена",
+  "entryWatched": "Просмотр в {time} · {percent}",
+  "@entryWatched": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "entryDone": "Завершено в {time}",
+  "@entryDone": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsAccounts": "Аккаунты",
+  "addAccount": "Войти",
+  "addGuestAccount": "Добавить гостевой хост",
+  "accountActive": "Активный аккаунт",
+  "removeAccount": "Удалить аккаунт",
+  "accountAdded": "Вход выполнен",
+  "signInFailed": "Не удалось войти. Проверьте имя, ключ API и хост.",
+  "username": "Имя пользователя",
+  "apiKey": "Ключ API",
+  "apiKeyHint": "Из настроек аккаунта на сайте",
+  "host": "Хост",
+  "customHostUrl": "URL своего хоста",
+  "settingsAppearance": "Внешний вид",
+  "themeSystem": "Системная",
+  "themeLight": "Светлая",
+  "themeDark": "Тёмная",
+  "themeOled": "OLED",
+  "settingsLanguage": "Язык",
+  "settingsContent": "Контент",
+  "ratingSafe": "Только безопасное",
+  "ratingAll": "Всё подряд",
+  "ratingNote": "Показывает все рейтинги хоста. Недоступно на e926, где только безопасные посты.",
+  "settingsData": "Данные",
+  "resetAlgorithm": "Сбросить рекомендации",
+  "resetAlgorithmBody": "Стирает всё, что алгоритм узнал о вашем вкусе в этом профиле.",
+  "reset": "Сбросить",
+  "algorithmReset": "Рекомендации сброшены",
+  "settingsAbout": "О приложении",
+  "version": "Версия {version}",
+  "@version": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "checkForUpdates": "Проверить обновления",
+  "upToDate": "У вас последняя версия.",
+  "updateAvailable": "Доступна версия {tag}",
+  "@updateAvailable": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "updateCheckFailed": "Не удалось проверить обновления.",
+  "allReleases": "Все релизы",
+  "signIn": "Войти"
+}

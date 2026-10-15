@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=floof
+Comment=A video client for e926 with a local recommendation engine
+Exec=floof
+Icon=floof
+Type=Application
+Categories=AudioVideo;Video;
+StartupNotify=true

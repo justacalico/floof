@@ -1,0 +1,39 @@
+app-id: gitlab.httpanimations.floof
+runtime: org.freedesktop.Platform
+runtime-version: '24.08'
+sdk: org.freedesktop.Sdk
+command: floof
+finish-args:
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --share=network
+  - --device=dri
+  - --socket=pulseaudio
+  - --talk-name=org.freedesktop.Flatpak
+modules:
+  - name: floof
+    buildsystem: simple
+    only-arches: [x86_64, aarch64]
+    build-commands:
+      - mkdir -p /app/floof /app/bin /app/share/applications /app/share/icons/hicolor/512x512/apps /app/share/metainfo
+      - cp -a bundle/. /app/floof/
+      - ln -sf /app/floof/floof /app/bin/floof
+      - cp floof.desktop /app/share/applications/gitlab.httpanimations.floof.desktop
+      - cp floof.png /app/share/icons/hicolor/512x512/apps/gitlab.httpanimations.floof.png
+      - cp metainfo.xml /app/share/metainfo/gitlab.httpanimations.floof.metainfo.xml
+    sources:
+      - type: dir
+        path: ../../build/linux/x64/release/bundle
+        dest: bundle
+        only-arches: [x86_64]
+      - type: dir
+        path: ../../build/linux/arm64/release/bundle
+        dest: bundle
+        only-arches: [aarch64]
+      - type: file
+        path: ../linux/floof.desktop
+      - type: file
+        path: ../../assets/icon_512.png
+        dest-filename: floof.png
+      - type: file
+        path: metainfo.xml

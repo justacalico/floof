@@ -1,0 +1,124 @@
+{
+  "@@locale": "ga",
+  "appName": "floof",
+  "navHome": "Baile",
+  "navSearch": "Cuardaigh",
+  "navProfiles": "Próifílí",
+  "navHistory": "Stair",
+  "navSettings": "Socruithe",
+  "feedEmpty": "Tá an áit seo folamh go fóil. Tarraing físeáin isteach.",
+  "feedError": "Níorbh fhéidir an fotha a lódáil.",
+  "retry": "Bain triail eile as",
+  "like": "Is maith liom",
+  "done": "Críochnaithe",
+  "openPost": "Oscail sa bhrabhsálaí",
+  "doneAskTitle": "Marcáil an físeán seo mar chríochnaithe. Grianghraf a chur leis?",
+  "doneTakePhoto": "Tóg grianghraf",
+  "doneSkip": "Léim thart",
+  "doneRecorded": "Marcáilte mar chríochnaithe",
+  "searchHint": "Cuardaigh clibeanna, m.sh. animated canine",
+  "searchEmpty": "Níor aimsíodh físeáin don chuardach sin.",
+  "addProfile": "Cuir próifíl leis",
+  "profileNameHint": "Ainm na próifíle",
+  "cancel": "Cealaigh",
+  "create": "Cruthaigh",
+  "rename": "Athainmnigh",
+  "renameProfile": "Athainmnigh an phróifíl",
+  "deleteProfile": "Scrios an phróifíl",
+  "activeProfile": "An phróifíl ghníomhach",
+  "tapToSwitch": "Tapáil chun aistriú go dtí an phróifíl seo",
+  "statsTitle": "An phróifíl seo",
+  "statsWatched": "{count} físeán feicthe",
+  "@statsWatched": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statsDone": "Críochnaithe {count} uair",
+  "@statsDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tasteTitle": "Rudaí a d'fhoghlaim an t-algartam",
+  "tasteEmpty": "Féach ar chúpla físeán agus foghlaimeoidh an t-algartam do bhlasta.",
+  "tasteLikes": "Rudaí is maith leat",
+  "tasteDislikes": "Rudaí nach maith leat",
+  "historyEmpty": "Níl stair ann go fóil. Féach ar rud éigin.",
+  "clearHistory": "Glan an stair",
+  "clearHistoryBody": "Scriosann sé seo do stair faire agus marcanna críochnaithe don phróifíl seo.",
+  "clear": "Glan",
+  "historyCleared": "Stair glanta",
+  "entryWatched": "Feicthe ag {time} · {percent}",
+  "@entryWatched": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "entryDone": "Críochnaithe ag {time}",
+  "@entryDone": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsAccounts": "Cuntais",
+  "addAccount": "Sínigh isteach",
+  "addGuestAccount": "Cuir óstach aoi leis",
+  "accountActive": "An cuntas gníomhach",
+  "removeAccount": "Bain an cuntas",
+  "accountAdded": "Sínithe isteach",
+  "signInFailed": "Theip ar an tsíniú isteach. Seiceáil an t-ainm, an eochair API agus an t-óstach.",
+  "username": "Ainm úsáideora",
+  "apiKey": "Eochair API",
+  "apiKeyHint": "Ó shocruithe do chuntais ar an suíomh",
+  "host": "Óstach",
+  "customHostUrl": "URL óstaigh shaincheaptha",
+  "settingsAppearance": "Cuma",
+  "themeSystem": "Córas",
+  "themeLight": "Solasach",
+  "themeDark": "Dorcha",
+  "themeOled": "OLED",
+  "settingsLanguage": "Teanga",
+  "settingsContent": "Ábhar",
+  "ratingSafe": "Sábháilte amháin",
+  "ratingAll": "Gach rud",
+  "ratingNote": "Taispeánann sé gach rátáil a fhreastalaíonn an t-óstach. Níl sé ar fáil ar e926, nach bhfuil ann ach postaí sábháilte.",
+  "settingsData": "Sonraí",
+  "resetAlgorithm": "Athshocraigh moltaí",
+  "resetAlgorithmBody": "Glanann sé seo gach rud a d'fhoghlaim an t-algartam faoi do bhlasta sa phróifíl seo.",
+  "reset": "Athshocraigh",
+  "algorithmReset": "Moltaí athshocraithe",
+  "settingsAbout": "Faoi",
+  "version": "Leagan {version}",
+  "@version": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "checkForUpdates": "Seiceáil le haghaidh nuashonruithe",
+  "upToDate": "Tá an leagan is déanaí agat.",
+  "updateAvailable": "Tá leagan {tag} ar fáil",
+  "@updateAvailable": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "updateCheckFailed": "Níorbh fhéidir nuashonruithe a sheiceáil.",
+  "allReleases": "Gach eisiúint",
+  "signIn": "Sínigh isteach"
+}

@@ -1,0 +1,124 @@
+{
+  "@@locale": "zh",
+  "appName": "floof",
+  "navHome": "首页",
+  "navSearch": "搜索",
+  "navProfiles": "档案",
+  "navHistory": "历史",
+  "navSettings": "设置",
+  "feedEmpty": "这里还没有内容,拉取一些视频吧。",
+  "feedError": "无法加载推荐流。",
+  "retry": "重试",
+  "like": "喜欢",
+  "done": "完成",
+  "openPost": "在浏览器中打开",
+  "doneAskTitle": "把这个视频标记为完成,要加一张照片吗?",
+  "doneTakePhoto": "拍一张照片",
+  "doneSkip": "跳过",
+  "doneRecorded": "已标记为完成",
+  "searchHint": "搜索标签,例如 animated canine",
+  "searchEmpty": "没有视频匹配这个搜索。",
+  "addProfile": "添加档案",
+  "profileNameHint": "档案名称",
+  "cancel": "取消",
+  "create": "创建",
+  "rename": "重命名",
+  "renameProfile": "重命名档案",
+  "deleteProfile": "删除档案",
+  "activeProfile": "当前档案",
+  "tapToSwitch": "点按切换到此档案",
+  "statsTitle": "此档案",
+  "statsWatched": "已观看 {count} 个视频",
+  "@statsWatched": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statsDone": "完成 {count} 次",
+  "@statsDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tasteTitle": "算法学到了什么",
+  "tasteEmpty": "看一些视频,算法就会了解你的口味。",
+  "tasteLikes": "喜欢",
+  "tasteDislikes": "不喜欢",
+  "historyEmpty": "还没有历史记录,去看点什么吧。",
+  "clearHistory": "清除历史",
+  "clearHistoryBody": "删除此档案的观看历史和完成标记。",
+  "clear": "清除",
+  "historyCleared": "历史已清除",
+  "entryWatched": "观看于 {time} · {percent}",
+  "@entryWatched": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "entryDone": "完成于 {time}",
+  "@entryDone": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsAccounts": "账户",
+  "addAccount": "登录",
+  "addGuestAccount": "添加访客站点",
+  "accountActive": "当前账户",
+  "removeAccount": "移除账户",
+  "accountAdded": "已登录",
+  "signInFailed": "登录失败,请检查用户名、API 密钥和站点。",
+  "username": "用户名",
+  "apiKey": "API 密钥",
+  "apiKeyHint": "在站点的账户设置中获取",
+  "host": "站点",
+  "customHostUrl": "自定义站点地址",
+  "settingsAppearance": "外观",
+  "themeSystem": "跟随系统",
+  "themeLight": "浅色",
+  "themeDark": "深色",
+  "themeOled": "OLED",
+  "settingsLanguage": "语言",
+  "settingsContent": "内容",
+  "ratingSafe": "仅安全内容",
+  "ratingAll": "全部内容",
+  "ratingNote": "显示站点提供的所有分级。e926 上不可用,它只有安全帖子。",
+  "settingsData": "数据",
+  "resetAlgorithm": "重置推荐",
+  "resetAlgorithmBody": "清除算法在此档案上学到的口味偏好。",
+  "reset": "重置",
+  "algorithmReset": "推荐已重置",
+  "settingsAbout": "关于",
+  "version": "版本 {version}",
+  "@version": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "checkForUpdates": "检查更新",
+  "upToDate": "已是最新版本。",
+  "updateAvailable": "新版本 {tag} 可用",
+  "@updateAvailable": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "updateCheckFailed": "无法检查更新。",
+  "allReleases": "所有版本",
+  "signIn": "登录"
+}

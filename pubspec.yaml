@@ -1,0 +1,60 @@
+name: floof
+description: "A video client for e926 with a local recommendation engine."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.13.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  http: ^1.2.0
+  provider: ^6.1.1
+  video_player: ^2.9.2
+  shared_preferences: ^2.3.0
+  path_provider: ^2.1.4
+  image_picker: ^1.1.2
+  package_info_plus: ^8.0.2
+  url_launcher: ^6.3.0
+  window_manager: ^0.4.3
+  intl: any
+  path: ^1.9.0
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  golden_toolkit: ^0.15.0
+  flutter_launcher_icons: ^0.14.1
+  video_player_platform_interface: ^6.3.0
+  image_picker_platform_interface: ^2.10.0
+  path_provider_platform_interface: ^2.1.0
+  url_launcher_platform_interface: ^2.3.0
+  plugin_platform_interface: ^2.1.8
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  web:
+    generate: true
+  windows:
+    generate: true
+  macos:
+    generate: true
+  image_path: "assets/icon.png"
+  adaptive_icon_background: "#1b2a41"
+  adaptive_icon_foreground: "assets/icon_fg.png"
+
+flutter:
+  uses-material-design: true
+  generate: true
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter.ttf
+  assets:
+    - assets/icon.png

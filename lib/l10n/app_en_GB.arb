@@ -1,0 +1,124 @@
+{
+  "@@locale": "en_GB",
+  "appName": "floof",
+  "navHome": "Home",
+  "navSearch": "Search",
+  "navProfiles": "Profiles",
+  "navHistory": "History",
+  "navSettings": "Settings",
+  "feedEmpty": "Nothing here yet. Pull some videos in.",
+  "feedError": "Could not load the feed.",
+  "retry": "Retry",
+  "like": "Like",
+  "done": "Done",
+  "openPost": "Open in browser",
+  "doneAskTitle": "Mark this video as done. Add a photo?",
+  "doneTakePhoto": "Take a photo",
+  "doneSkip": "Skip",
+  "doneRecorded": "Marked as done",
+  "searchHint": "Search tags, e.g. animated canine",
+  "searchEmpty": "No videos matched that search.",
+  "addProfile": "Add profile",
+  "profileNameHint": "Profile name",
+  "cancel": "Cancel",
+  "create": "Create",
+  "rename": "Rename",
+  "renameProfile": "Rename profile",
+  "deleteProfile": "Delete profile",
+  "activeProfile": "Active profile",
+  "tapToSwitch": "Tap to switch to this profile",
+  "statsTitle": "This profile",
+  "statsWatched": "{count} videos watched",
+  "@statsWatched": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statsDone": "{count} times done",
+  "@statsDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tasteTitle": "What the algorithm learned",
+  "tasteEmpty": "Watch some videos and the algorithm will learn your taste.",
+  "tasteLikes": "Likes",
+  "tasteDislikes": "Dislikes",
+  "historyEmpty": "No history yet. Go watch something.",
+  "clearHistory": "Clear history",
+  "clearHistoryBody": "Deletes your watch history and done marks for this profile.",
+  "clear": "Clear",
+  "historyCleared": "History cleared",
+  "entryWatched": "Watched at {time} · {percent}",
+  "@entryWatched": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "entryDone": "Done at {time}",
+  "@entryDone": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsAccounts": "Accounts",
+  "addAccount": "Sign in",
+  "addGuestAccount": "Add guest host",
+  "accountActive": "Active account",
+  "removeAccount": "Remove account",
+  "accountAdded": "Signed in",
+  "signInFailed": "Sign in failed. Check the username, API key and host.",
+  "username": "Username",
+  "apiKey": "API key",
+  "apiKeyHint": "From your account settings on the site",
+  "host": "Host",
+  "customHostUrl": "Custom host URL",
+  "settingsAppearance": "Appearance",
+  "themeSystem": "System",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "themeOled": "OLED",
+  "settingsLanguage": "Language",
+  "settingsContent": "Content",
+  "ratingSafe": "Safe only",
+  "ratingAll": "Everything",
+  "ratingNote": "Shows every rating the host serves. Off on e926, which only has safe posts.",
+  "settingsData": "Data",
+  "resetAlgorithm": "Reset recommendations",
+  "resetAlgorithmBody": "Wipes what the algorithm learned about your taste for this profile.",
+  "reset": "Reset",
+  "algorithmReset": "Recommendations reset",
+  "settingsAbout": "About",
+  "version": "Version {version}",
+  "@version": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "checkForUpdates": "Check for updates",
+  "upToDate": "You are on the latest release.",
+  "updateAvailable": "Version {tag} is available",
+  "@updateAvailable": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "updateCheckFailed": "Could not check for updates.",
+  "allReleases": "All releases",
+  "signIn": "Sign in"
+}

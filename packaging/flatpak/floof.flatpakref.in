@@ -1,0 +1,9 @@
+[Flatpak Ref]
+Title=floof
+Name=gitlab.httpanimations.floof
+Branch=stable
+Url=@URL@
+IsRuntime=false
+GPGKey=@GPGKEY@
+SuggestRemoteName=floof
+RuntimeRepo=https://dl.flathub.org/repo/flathub.flatpakrepo
