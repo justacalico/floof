@@ -3,6 +3,7 @@ runtime: org.freedesktop.Platform
 runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
 command: floof
+appstream-compose: false
 finish-args:
   - --socket=wayland
   - --socket=fallback-x11
