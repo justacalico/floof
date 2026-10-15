@@ -63,3 +63,4 @@ flatpak-repo*/
 fp-repos/
 AppDir/
 .gpg/
+*.iml

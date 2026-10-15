@@ -1,17 +1,44 @@
 # floof
 
-A new Flutter project.
+A video client for e926.net and other e621-compatible booru hosts.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- Home feed driven by a local taste engine. It scores tags from how you
+  actually watch and adjusts your feed over time. Nothing leaves the device.
+- Search with tag autocomplete.
+- Swipe-style video viewing with autoplay.
+- History and timeline of what you watched and marked done.
+- Done lets you attach a photo when you finish a video, or skip it.
+- Profiles so different people (or moods) keep separate feeds.
+- Guest e926 account by default, login with API key, or point it at e621
+  or any compatible host.
+- Light, dark, and OLED themes, four languages.
+- In-app update checks against GitLab releases.
 
-A few resources to get you started if this is your first Flutter project:
+## Build
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+```
+flutter pub get
+flutter gen-l10n
+flutter run
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Test
+
+```
+flutter analyze
+flutter test --coverage
+```
+
+Tests are expected to cover every line.
+
+## Release
+
+Releases are tagged with `cog`. A tag builds Android, Linux, Windows, and
+web artifacts through GitHub Actions and syncs them back to GitLab
+releases. The landing page in `landing/` deploys to GitLab Pages.
+
+## License
+
+AGPL-3.0
