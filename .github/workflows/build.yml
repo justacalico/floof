@@ -222,6 +222,8 @@ jobs:
           mkdir -p "$HOME/.gpg"
           echo "${{ secrets.FLATPAK_GPG_KEY }}" | base64 -d | gpg --batch --homedir "$HOME/.gpg" --import
           KEYID="${{ secrets.FLATPAK_GPG_KEY_ID }}"
+          flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          flatpak install --user -y flathub org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08
           flatpak-builder --user --arch="$FP_ARCH" --repo=flatpak-repo-$FP_ARCH --force-clean build-dir packaging/flatpak/$APP_ID.yml
           flatpak build-update-repo --gpg-sign="$KEYID" --gpg-homedir="$HOME/.gpg" --generate-static-deltas flatpak-repo-$FP_ARCH
           mkdir -p flatpak-repo-flat
