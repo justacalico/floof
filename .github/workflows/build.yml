@@ -334,7 +334,7 @@ jobs:
 
   release:
     name: Release
-    needs: [setup, build]
+    needs: [setup, build, merge-flatpak]
     if: ${{ !cancelled() && needs.build.result == 'success' && needs.setup.outputs.build_all == 'true' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
     concurrency:
