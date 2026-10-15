@@ -1,0 +1,8 @@
+[Flatpak Repo]
+Title=floof
+Url=https://httpanimations.gitlab.io/floof/flatpak
+Homepage=https://gitlab.com/HttpAnimations/floof
+Comment=Releases of floof, an e926 video client
+Description=Releases of floof, an e926 video client
+Icon=https://gitlab.com/HttpAnimations/floof/-/raw/main/assets/icon_512.png
+GPGKey=@GPGKEY@

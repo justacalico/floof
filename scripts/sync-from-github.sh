@@ -77,3 +77,15 @@ glab release create "$RELEASE_TAG" \
   --ref "$RELEASE_COMMIT" \
   --use-package-registry \
   "$PROJECT_DIR/release-assets"/*
+
+# Update the AltStore source on main so it lists the new release.
+if [ -n "${GITLAB_TOKEN:-}" ] && bash "$PROJECT_DIR/scripts/update-altstore.sh" "$RELEASE_TAG"; then
+  git config user.name "GitLab CI"
+  git config user.email "ci@gitlab.com"
+  git remote set-url origin "https://oauth2:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+  git add repos/altstore.json
+  if ! git diff --cached --quiet; then
+    git commit -m "chore: 更新 AltStore 源 $RELEASE_TAG"
+    git push -o ci.skip origin HEAD:main
+  fi
+fi

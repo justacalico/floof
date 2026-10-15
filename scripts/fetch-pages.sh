@@ -25,4 +25,9 @@ echo "Downloading pages artifact from run $RUN_ID"
 rm -rf public
 gh run download "$RUN_ID" -R "$REPO" -n pages -D public
 test -f public/index.html
+
+if gh run download "$RUN_ID" -R "$REPO" -n flatpak-merged -D public/flatpak 2>/dev/null; then
+  echo "flatpak repo merged into public/flatpak"
+fi
+
 ls public

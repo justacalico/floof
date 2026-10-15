@@ -325,6 +325,9 @@ jobs:
           sed -e "s|@GPGKEY@|$(base64 -w0 flatpak/key.gpg)|" \
               -e "s|@URL@|https://httpanimations.gitlab.io/floof/flatpak|" \
               packaging/flatpak/floof.flatpakref.in > flatpak/floof.flatpakref
+          sed -e "s|@GPGKEY@|$(base64 -w0 flatpak/key.gpg)|" \
+              packaging/flatpak/floof.flatpakrepo.in > flatpak/floof.flatpakrepo
+          cp flatpak/floof.flatpakref flatpak/floof.flatpakrepo flatpak/key.gpg flatpak-merged/
       - name: Upload merged flatpak repo
         uses: actions/upload-artifact@v4
         with:
@@ -368,46 +371,6 @@ jobs:
           ls release-assets/
           cd release-assets
           sha256sum * > ../SHA256SUMS.txt
-      - name: Update altstore source
-        run: |
-          set -euo pipefail
-          TAG="${{ steps.meta.outputs.release_tag }}"
-          IPA="https://github.com/${{ github.repository }}/releases/download/$TAG/floof-ios.ipa"
-          VERSION="${TAG#v}"
-          python3 - "$VERSION" "$IPA" <<'PY'
-          import json, sys, datetime
-          version, ipa = sys.argv[1], sys.argv[2]
-          src = {
-            "name": "floof",
-            "identifier": "gitlab.httpanimations.floof",
-            "sourceURL": "https://gitlab.com/HttpAnimations/floof/-/raw/main/repos/altstore.json",
-            "apps": [{
-              "name": "floof",
-              "bundleIdentifier": "gitlab.httpanimations.floof",
-              "developerName": "HttpAnimations",
-              "localizedDescription": "A video client for e926 with a local recommendation engine.",
-              "iconURL": "https://gitlab.com/HttpAnimations/floof/-/raw/main/assets/icon_512.png",
-              "tintColor": "FFB347",
-              "versions": [{
-                "version": version,
-                "date": datetime.date.today().isoformat(),
-                "downloadURL": ipa,
-                "size": 0,
-                "minOSVersion": "15.0"
-              }],
-              "appPermissions": {
-                "photos": "Used to attach a photo when you mark a video as done.",
-                "camera": [{"NSCameraUsageDescription": "Used to take a photo when you mark a video as done."}]
-              }
-            }]
-          }
-          open('repos/altstore.json', 'w').write(json.dumps(src, indent=2))
-          PY
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add repos/altstore.json
-          git diff --cached --quiet || git commit -m "chore: 更新 altstore 源 [skip ci]"
-          git push || true
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
