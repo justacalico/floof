@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Package a built Flutter Linux bundle as an RPM for Fedora and friends.
-# Installs to /opt/devinorium with a /usr/bin/devinorium symlink, matching the
+# Installs to /opt/floof with a /usr/bin/floof symlink, matching the
 # layout used by the .deb package built in CI.
 #
 # Usage: scripts/build-rpm.sh <bundle-dir> <version> <rpm-arch> <output-file> [release]
@@ -47,33 +47,33 @@ mkdir -p "$TOPDIR"/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
 BUNDLED_SOS="$(find "$BUNDLE_DIR" -type f -name '*.so*' -printf '%f\n' | sort -u | sed 's/\./[.]/g' | paste -sd'|')"
 REQUIRES_EXCLUDE="^(${BUNDLED_SOS})([(].*[)])*$"
 
-cat > "$TOPDIR/SPECS/devinorium.spec" <<'EOF'
-Name: devinorium
+cat > "$TOPDIR/SPECS/floof.spec" <<'EOF'
+Name: floof
 Version: %{pkg_version}
 Release: %{pkg_release}%{?dist}
-Summary: Devinorium desktop client
+Summary: floof video client
 License: AGPL-3.0-only
-URL: https://gitlab.com/HttpAnimations/devinorium
+URL: https://gitlab.com/HttpAnimations/floof
 
 # The bundle is already compiled; skip debug packages and buildroot policy
 # scripts (strip, rpath checks) that would mangle or reject the prebuilt libs.
 %global debug_package %{nil}
 %global __os_install_post %{nil}
 # Bundled libs must not leak into the rpm provides namespace.
-%global __provides_exclude_from ^/opt/devinorium/.*
+%global __provides_exclude_from ^/opt/floof/.*
 %global __requires_exclude %{requires_exclude}
 
 %description
-A secure, self-hostable Material 3 client for managing Devin work.
+A video client for e926 with a local recommendation engine
 
 %install
-mkdir -p %{buildroot}/opt/devinorium %{buildroot}/usr/bin
-cp -a %{bundle_dir}/. %{buildroot}/opt/devinorium/
-ln -sf /opt/devinorium/devinorium_frontend %{buildroot}/usr/bin/devinorium
+mkdir -p %{buildroot}/opt/floof %{buildroot}/usr/bin
+cp -a %{bundle_dir}/. %{buildroot}/opt/floof/
+ln -sf /opt/floof/floof %{buildroot}/usr/bin/floof
 
 %files
-/opt/devinorium
-/usr/bin/devinorium
+/opt/floof
+/usr/bin/floof
 EOF
 
 rpmbuild -bb \
@@ -83,7 +83,7 @@ rpmbuild -bb \
   --define "pkg_release $RELEASE" \
   --define "bundle_dir $(realpath "$BUNDLE_DIR")" \
   --define "requires_exclude $REQUIRES_EXCLUDE" \
-  "$TOPDIR/SPECS/devinorium.spec"
+  "$TOPDIR/SPECS/floof.spec"
 
 RPM_PATH="$(find "$TOPDIR/RPMS" -name '*.rpm' -print -quit)"
 if [ -z "$RPM_PATH" ]; then

@@ -208,11 +208,11 @@ jobs:
           chmod +x "$APPIMAGETOOL"
           mkdir -p AppDir/usr/bin AppDir/usr/share/applications AppDir/usr/share/icons/hicolor/512x512/apps
           cp -a "$BUNDLE/." AppDir/usr/bin/
-          cp packaging/linux/floof.desktop AppDir/usr/share/applications/
-          cp assets/icon_512.png AppDir/usr/share/icons/hicolor/512x512/apps/floof.png
+          cp packaging/linux/floof.desktop AppDir/usr/share/applications/gitlab.httpanimations.floof.desktop
+          cp assets/icon_512.png AppDir/usr/share/icons/hicolor/512x512/apps/gitlab.httpanimations.floof.png
           ln -sf usr/bin/floof AppDir/AppRun
-          ln -sf usr/share/applications/floof.desktop AppDir/floof.desktop
-          ln -sf usr/share/icons/hicolor/512x512/apps/floof.png AppDir/floof.png
+          ln -sf usr/share/applications/gitlab.httpanimations.floof.desktop AppDir/gitlab.httpanimations.floof.desktop
+          ln -sf usr/share/icons/hicolor/512x512/apps/gitlab.httpanimations.floof.png AppDir/gitlab.httpanimations.floof.png
           ARCH=x86_64 "$APPIMAGETOOL" AppDir artifacts/floof-linux-x86_64.AppImage
       - name: Build Flatpak
         if: matrix.target == 'linux' || matrix.target == 'linux-arm64'

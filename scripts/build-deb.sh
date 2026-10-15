@@ -16,8 +16,8 @@ mkdir -p "$PKG/opt/floof" "$PKG/usr/bin" "$PKG/DEBIAN" \
 
 cp -a "$BUNDLE_DIR/." "$PKG/opt/floof/"
 ln -sf /opt/floof/floof "$PKG/usr/bin/floof"
-cp packaging/linux/floof.desktop "$PKG/usr/share/applications/"
-cp assets/icon_512.png "$PKG/usr/share/icons/hicolor/512x512/apps/floof.png"
+cp packaging/linux/floof.desktop "$PKG/usr/share/applications/gitlab.httpanimations.floof.desktop"
+cp assets/icon_512.png "$PKG/usr/share/icons/hicolor/512x512/apps/gitlab.httpanimations.floof.png"
 
 cat > "$PKG/DEBIAN/control" <<EOF
 Package: floof
