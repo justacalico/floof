@@ -108,7 +108,6 @@ jobs:
   build:
     name: Build ${{ matrix.target }}
     needs: [setup, verify]
-    if: ${{ needs.setup.outputs.build_all == 'true' || matrix.target == 'web' }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
