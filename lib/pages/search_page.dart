@@ -35,6 +35,7 @@ class SearchPageState extends State<SearchPage> {
   }
 
   void _onChanged(String value) {
+    setState(() {});
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 350), () async {
       final term = _field.text.trim();
@@ -55,7 +56,7 @@ class SearchPageState extends State<SearchPage> {
   }
 
   Future<void> _search(String query, {int page = 1}) async {
-    if (query.trim().isEmpty) return;
+    if (query.trim().isEmpty || _loading) return;
     setState(() {
       _loading = true;
       _suggestions = [];
@@ -71,21 +72,25 @@ class SearchPageState extends State<SearchPage> {
       if (!mounted) return;
       setState(() {
         _page = page;
-        _hasMore = posts.isNotEmpty;
+        _hasMore = posts.length >= 40;
         _loading = false;
         _searched = true;
         if (page == 1) {
           _results = posts;
         } else {
-          _results = [..._results, ...posts];
+          final seen = _results.map((p) => p.key).toSet();
+          _results = [
+            ..._results,
+            ...posts.where((p) => !seen.contains(p.key)),
+          ];
         }
       });
-    } on BooruException {
+    } catch (_) {
       if (mounted) {
         setState(() {
           _loading = false;
           _searched = true;
-          _results = [];
+          if (page == 1) _results = [];
           _hasMore = false;
         });
       }
@@ -170,7 +175,7 @@ class SearchPageState extends State<SearchPage> {
       itemBuilder: (context, index) {
         if (index >= _results.length) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) _search(_query, page: _page + 1);
+            if (mounted && !_loading) _search(_query, page: _page + 1);
           });
           return const Center(child: CircularProgressIndicator());
         }

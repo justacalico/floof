@@ -67,7 +67,7 @@ void main() {
   test('taste engine restores seen ids', () {
     final e = TasteEngine.fromJson(
         {'weights': {'g:fox': 2.0}, 'seen': [1, '2', 3]});
-    expect(e.seenPostIds, containsAll([1, 3]));
+    expect(e.seenPostIds, containsAll(['1', '3']));
     expect(TasteEngine.fromJson({}).weights, isEmpty);
   });
 
@@ -125,7 +125,7 @@ void main() {
     expect(maximized, isFalse);
   });
 
-  testWidgets('card reportWatch without playback', (tester) async {
+  testWidgets('card without playback reports nothing', (tester) async {
     HttpOverrides.global = FakeHttpOverrides();
     addTearDown(() => HttpOverrides.global = null);
     final state = await makeState();
@@ -145,9 +145,7 @@ void main() {
     ));
     await tester.pumpAndSettle();
     key.currentState!.reportWatch();
-    expect(state.history, hasLength(1));
-    key.currentState!.reportWatch(duration: 100);
-    expect(state.history, hasLength(1));
+    expect(state.history, isEmpty);
     await tester.pumpWidget(const SizedBox());
   });
 
@@ -257,6 +255,8 @@ void main() {
     final state = await makeState(client: client);
     state.feedPosts.addAll(client.posts);
     await tester.pumpWidget(pageApp(const HomePage(), state));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.play_circle_fill));
     await tester.pumpAndSettle();
     await tester.fling(
         find.byType(PageView), const Offset(0, -400), 1000);

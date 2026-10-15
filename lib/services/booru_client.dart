@@ -24,15 +24,18 @@ class BooruClient {
   final String username;
   final String apiKey;
   final http.Client _client;
+  final bool _ownsClient;
   final String userAgent;
 
   BooruClient({
-    this.baseUrl = 'https://e926.net',
+    String baseUrl = 'https://e926.net',
     this.username = '',
     this.apiKey = '',
     http.Client? client,
     this.userAgent = 'floof/0.1 (https://gitlab.com/HttpAnimations/floof)',
-  }) : _client = client ?? http.Client();
+  })  : baseUrl = baseUrl.replaceAll(RegExp(r'/+$'), ''),
+        _client = client ?? http.Client(),
+        _ownsClient = client == null;
 
   Map<String, String> get _headers {
     final h = <String, String>{'User-Agent': userAgent};
@@ -63,7 +66,8 @@ class BooruClient {
       throw BooruException('search failed', res.statusCode);
     }
     final decoded = jsonDecode(res.body);
-    final list = decoded is Map ? decoded['posts'] as List? : decoded as List?;
+    final raw = decoded is Map ? decoded['posts'] : decoded;
+    final list = raw is List ? raw : null;
     if (list == null) return const [];
     return list
         .whereType<Map<String, dynamic>>()
@@ -144,5 +148,7 @@ class BooruClient {
     }
   }
 
-  void dispose() => _client.close();
+  void dispose() {
+    if (_ownsClient) _client.close();
+  }
 }

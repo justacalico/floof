@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -11,6 +10,7 @@ import '../models/app_update.dart';
 import '../models/history_entry.dart';
 import '../models/post.dart';
 import '../models/profile.dart';
+import '../platform/io_ops.dart' as io;
 import '../services/booru_client.dart';
 import '../services/feed_service.dart';
 import '../services/taste_engine.dart';
@@ -59,7 +59,7 @@ class AppState extends ChangeNotifier {
   TasteEngine engine = TasteEngine();
   List<HistoryEntry> history = [];
   List<DoneEntry> dones = [];
-  Set<int> likedPostIds = {};
+  Set<String> likedPostIds = {};
   final List<Post> feedPosts = [];
   bool feedLoading = false;
   Object? feedError;
@@ -88,23 +88,33 @@ class AppState extends ChangeNotifier {
   static const _historyLimit = 500;
 
   void load() {
-    final accJson = prefs.getString('accounts');
-    if (accJson != null) {
-      final list = jsonDecode(accJson) as List;
-      accounts = list
-          .whereType<Map<String, dynamic>>()
-          .map(Account.fromJson)
-          .toList();
+    try {
+      final accJson = prefs.getString('accounts');
+      if (accJson != null) {
+        accounts = (jsonDecode(accJson) as List)
+            .whereType<Map<String, dynamic>>()
+            .map(Account.fromJson)
+            .toList();
+      }
+    } catch (_) {
+      accounts = [];
     }
     if (accounts.isEmpty) accounts = [Account.guest()];
     activeAccountId = prefs.getString('activeAccountId') ?? accounts.first.id;
+    if (accounts.every((a) => a.id != activeAccountId)) {
+      activeAccountId = accounts.first.id;
+    }
 
-    final profJson = prefs.getString('profiles');
-    if (profJson != null) {
-      profiles = (jsonDecode(profJson) as List)
-          .whereType<Map<String, dynamic>>()
-          .map(Profile.fromJson)
-          .toList();
+    try {
+      final profJson = prefs.getString('profiles');
+      if (profJson != null) {
+        profiles = (jsonDecode(profJson) as List)
+            .whereType<Map<String, dynamic>>()
+            .map(Profile.fromJson)
+            .toList();
+      }
+    } catch (_) {
+      profiles = [];
     }
     if (profiles.isEmpty) {
       profiles = [
@@ -112,38 +122,49 @@ class AppState extends ChangeNotifier {
       ];
     }
     activeProfileId = prefs.getString('activeProfileId') ?? profiles.first.id;
+    if (profiles.every((p) => p.id != activeProfileId)) {
+      activeProfileId = profiles.first.id;
+    }
 
-    theme = AppTheme.values[prefs.getInt('theme') ?? 0];
+    theme = AppTheme.values[
+        (prefs.getInt('theme') ?? 0).clamp(0, AppTheme.values.length - 1)];
     localeTag = prefs.getString('locale') ?? '';
-    contentRating =
-        ContentRating.values[prefs.getInt('contentRating') ?? 0];
+    contentRating = ContentRating.values[
+        (prefs.getInt('contentRating') ?? 0)
+            .clamp(0, ContentRating.values.length - 1)];
 
     _loadProfile();
     notifyListeners();
   }
 
   void _loadProfile() {
-    final tasteJson = prefs.getString('$_profileKey.taste');
-    engine = tasteJson != null
-        ? TasteEngine.fromJson(jsonDecode(tasteJson) as Map<String, dynamic>)
-        : TasteEngine();
-    final histJson = prefs.getString('$_profileKey.history');
-    history = histJson != null
-        ? (jsonDecode(histJson) as List)
-            .whereType<Map<String, dynamic>>()
-            .map(HistoryEntry.fromJson)
-            .toList()
-        : [];
-    final doneJson = prefs.getString('$_profileKey.done');
-    dones = doneJson != null
-        ? (jsonDecode(doneJson) as List)
-            .whereType<Map<String, dynamic>>()
-            .map(DoneEntry.fromJson)
-            .toList()
-        : [];
-    likedPostIds = (prefs.getStringList('$_profileKey.liked') ?? [])
-        .map(int.parse)
-        .toSet();
+    try {
+      final tasteJson = prefs.getString('$_profileKey.taste');
+      engine = tasteJson != null
+          ? TasteEngine.fromJson(
+              jsonDecode(tasteJson) as Map<String, dynamic>)
+          : TasteEngine();
+      final histJson = prefs.getString('$_profileKey.history');
+      history = histJson != null
+          ? (jsonDecode(histJson) as List)
+              .whereType<Map<String, dynamic>>()
+              .map(HistoryEntry.fromJson)
+              .toList()
+          : [];
+      final doneJson = prefs.getString('$_profileKey.done');
+      dones = doneJson != null
+          ? (jsonDecode(doneJson) as List)
+              .whereType<Map<String, dynamic>>()
+              .map(DoneEntry.fromJson)
+              .toList()
+          : [];
+    } catch (_) {
+      engine = TasteEngine();
+      history = [];
+      dones = [];
+    }
+    likedPostIds =
+        (prefs.getStringList('$_profileKey.liked') ?? []).toSet();
     feedPosts.clear();
     _feed = null;
   }
@@ -204,8 +225,12 @@ class AppState extends ChangeNotifier {
       guest: false,
     );
     final probe = clientFactory(account);
-    final ok = await probe.verifyLogin();
-    probe.dispose();
+    bool ok;
+    try {
+      ok = await probe.verifyLogin();
+    } finally {
+      probe.dispose();
+    }
     if (!ok) throw const BooruException('login failed', 401);
     accounts = [
       ...accounts.where((a) => a.id != account.id),
@@ -256,7 +281,7 @@ class AppState extends ChangeNotifier {
     activeProfileId = id;
     prefs.setString('activeProfileId', id);
     _loadProfile();
-    notifyListeners();
+    refreshFeed();
   }
 
   void removeProfile(String id) {
@@ -265,10 +290,12 @@ class AppState extends ChangeNotifier {
     prefs.remove('profile.$id.taste');
     prefs.remove('profile.$id.history');
     prefs.remove('profile.$id.done');
+    prefs.remove('profile.$id.liked');
     if (activeProfileId == id) {
       activeProfileId = profiles.first.id;
       prefs.setString('activeProfileId', activeProfileId);
       _loadProfile();
+      refreshFeed();
     }
     _saveProfiles();
     notifyListeners();
@@ -295,24 +322,29 @@ class AppState extends ChangeNotifier {
         extraTagFilter: ratingFilter,
       );
 
+  int _feedGen = 0;
+
   Future<void> loadMoreFeed({int batchSize = 20}) async {
     if (feedLoading) return;
+    final gen = _feedGen;
     feedLoading = true;
     feedError = null;
     notifyListeners();
     try {
       final batch = await feed.nextBatch(batchSize: batchSize);
-      feedPosts.addAll(batch);
+      if (gen == _feedGen) feedPosts.addAll(batch);
     } catch (e) {
-      feedError = e;
+      if (gen == _feedGen) feedError = e;
     } finally {
-      feedLoading = false;
+      if (gen == _feedGen) feedLoading = false;
       notifyListeners();
     }
   }
 
   void refreshFeed() {
+    _feedGen++;
     feedPosts.clear();
+    feedLoading = false;
     _feed = FeedService(
       client: client,
       engine: engine,
@@ -323,13 +355,78 @@ class AppState extends ChangeNotifier {
     loadMoreFeed();
   }
 
+  void _recordWatchForProfile(String profileId, Post post,
+      double watchSeconds, double? duration, bool completed) {
+    final key = 'profile.$profileId';
+    try {
+      final e = _profileEngine(key);
+      final hist = _profileHistory(key);
+      hist.insert(
+          0,
+          HistoryEntry(
+            postId: post.id,
+            host: post.host,
+            watchedAt: now(),
+            watchSeconds: watchSeconds,
+            durationSeconds: duration ?? post.duration,
+            completed: completed,
+            postSummary: post.toSummary(),
+          ));
+      if (hist.length > _historyLimit) {
+        hist.removeRange(_historyLimit, hist.length);
+      }
+      _applyWatchSignal(e, post, watchSeconds, duration, completed);
+      prefs.setString('$key.taste', jsonEncode(e.toJson()));
+      prefs.setString('$key.history',
+          jsonEncode(hist.map((h) => h.toJson()).toList()));
+    } catch (_) {}
+  }
+
+  TasteEngine _profileEngine(String key) {
+    final tasteJson = prefs.getString('$key.taste');
+    return tasteJson != null
+        ? TasteEngine.fromJson(
+            jsonDecode(tasteJson) as Map<String, dynamic>)
+        : TasteEngine();
+  }
+
+  List<HistoryEntry> _profileHistory(String key) {
+    final histJson = prefs.getString('$key.history');
+    return histJson != null
+        ? (jsonDecode(histJson) as List)
+            .whereType<Map<String, dynamic>>()
+            .map(HistoryEntry.fromJson)
+            .toList()
+        : [];
+  }
+
+  void _applyWatchSignal(TasteEngine e, Post post, double watchSeconds,
+      double? duration, bool completed) {
+    if (completed) {
+      e.record(post, Signal.completed);
+    } else if (watchSeconds < 1.5) {
+      e.record(post, Signal.quickSkip);
+    } else {
+      e.record(post, Signal.watchProgress,
+          ratio: duration != null && duration > 0
+              ? watchSeconds / duration
+              : watchSeconds / 20);
+    }
+  }
+
   void recordSignal(Post post, Signal signal, {double ratio = 1}) {
     engine.record(post, signal, ratio: ratio);
     _saveProfile();
   }
 
   void recordWatch(
-      Post post, double watchSeconds, double? duration, bool completed) {
+      Post post, double watchSeconds, double? duration, bool completed,
+      {String? profileId}) {
+    if (profileId != null && profileId != activeProfileId) {
+      _recordWatchForProfile(
+          profileId, post, watchSeconds, duration, completed);
+      return;
+    }
     history = [
       HistoryEntry(
         postId: post.id,
@@ -345,35 +442,23 @@ class AppState extends ChangeNotifier {
     if (history.length > _historyLimit) {
       history = history.sublist(0, _historyLimit);
     }
-    if (completed) {
-      engine.record(post, Signal.completed);
-    } else if (watchSeconds < 1.5) {
-      engine.record(post, Signal.quickSkip);
-    } else {
-      engine.record(post, Signal.watchProgress,
-          ratio: duration != null && duration > 0
-              ? watchSeconds / duration
-              : watchSeconds / 20);
-    }
+    _applyWatchSignal(engine, post, watchSeconds, duration, completed);
     _saveProfile();
     notifyListeners();
   }
 
   bool isLiked(Post post) =>
-      likedPostIds.contains(post.id) || post.isFavorited;
+      likedPostIds.contains(post.key) || post.isFavorited;
 
   Future<void> toggleLike(Post post) async {
     final liked = isLiked(post);
     if (liked) {
-      likedPostIds.remove(post.id);
+      likedPostIds.remove(post.key);
     } else {
-      likedPostIds.add(post.id);
+      likedPostIds.add(post.key);
     }
     engine.record(post, liked ? Signal.unliked : Signal.liked);
-    prefs.setStringList(
-      '$_profileKey.liked',
-      likedPostIds.map((e) => '$e').toList(),
-    );
+    prefs.setStringList('$_profileKey.liked', likedPostIds.toList());
     _saveProfile();
     notifyListeners();
     if (activeAccount.canFavorite) {
@@ -383,8 +468,16 @@ class AppState extends ChangeNotifier {
         } else {
           await client.favorite(post.id);
         }
-      } on BooruException {
-        // keep the local weight change; the remote call is best-effort
+      } catch (_) {
+        if (liked) {
+          likedPostIds.add(post.key);
+        } else {
+          likedPostIds.remove(post.key);
+        }
+        engine.record(post, liked ? Signal.liked : Signal.unliked);
+        prefs.setStringList('$_profileKey.liked', likedPostIds.toList());
+        _saveProfile();
+        notifyListeners();
       }
     }
   }
@@ -392,15 +485,21 @@ class AppState extends ChangeNotifier {
   Future<String?> takePhoto() async {
     final picker = imagePicker;
     if (picker == null) return null;
-    final file = await picker.pickImage(
-      source: ImageSource.camera,
-      maxWidth: 1600,
-    );
+    XFile? file;
+    try {
+      file = await picker.pickImage(
+        source: ImageSource.camera,
+        maxWidth: 1600,
+      );
+    } catch (_) {
+      return null;
+    }
     if (file == null) return null;
-    return savePhoto(File(file.path));
+    return savePhoto(file.path);
   }
 
   Future<void> markDone(Post post, {bool skipPhoto = false}) async {
+    if (isDone(post)) return;
     String? photoPath;
     if (!skipPhoto) {
       photoPath = await takePhoto();
@@ -420,19 +519,15 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool isDone(int postId) => dones.any((d) => d.postId == postId);
+  bool isDone(Post post) =>
+      dones.any((d) => d.postId == post.id && d.host == post.host);
 
   int get doneCount => dones.length;
   int get watchedCount => history.length;
 
-  Future<String?> savePhoto(File source) async {
+  Future<String?> savePhoto(String sourcePath) async {
     if (docsDir.isEmpty) return null;
-    final dir = Directory('$docsDir/done_photos');
-    await dir.create(recursive: true);
-    final dest =
-        '${dir.path}/done_${now().millisecondsSinceEpoch}${source.path.substring(source.path.lastIndexOf('.'))}';
-    await source.copy(dest);
-    return dest;
+    return io.copyPhoto(sourcePath, '$docsDir/done_photos');
   }
 
   void clearHistory() {
@@ -454,8 +549,13 @@ class AppState extends ChangeNotifier {
     if (updateChecking) return;
     updateChecking = true;
     notifyListeners();
-    lastUpdateCheck = await checkerFactory(appVersion).check();
-    updateChecking = false;
+    final checker = checkerFactory(appVersion);
+    try {
+      lastUpdateCheck = await checker.check();
+    } finally {
+      checker.dispose();
+      updateChecking = false;
+    }
     notifyListeners();
   }
 

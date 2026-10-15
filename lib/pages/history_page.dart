@@ -1,11 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/history_entry.dart';
+import '../platform/io_ops.dart' as io;
 import '../state/app_state.dart';
 
 class _TimelineItem {
@@ -176,19 +175,12 @@ class _DonePhoto extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = path;
-    if (p == null || !File(p).existsSync()) {
+    if (p == null || !io.fileExists(p)) {
       return const Icon(Icons.flag_outlined, color: Colors.amber);
     }
     return ClipRRect(
       borderRadius: BorderRadius.circular(6),
-      child: Image.file(
-        File(p),
-        width: 48,
-        height: 48,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stack) =>
-            const Icon(Icons.flag_outlined, color: Colors.amber),
-      ),
+      child: io.photoWidget(p),
     );
   }
 }

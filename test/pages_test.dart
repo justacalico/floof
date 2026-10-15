@@ -84,6 +84,8 @@ void main() {
       await tester.pumpWidget(pageApp(const HomePage(), state));
       await tester.pumpAndSettle();
       expect(find.byType(PageView), findsOneWidget);
+      await tester.tap(find.byIcon(Icons.play_circle_fill));
+      await tester.pumpAndSettle();
       await tester.fling(find.byType(PageView), const Offset(0, -400), 800);
       await tester.pumpAndSettle();
       expect(state.history, isNotEmpty);

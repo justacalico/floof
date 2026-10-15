@@ -54,7 +54,6 @@ class FloofApp extends StatelessWidget {
       value: state,
       child: Consumer<AppState>(
         builder: (context, state, _) {
-          final l10n = AppLocalizations.of(context);
           return MaterialApp(
             title: 'floof',
             debugShowCheckedModeBanner: false,
@@ -89,7 +88,7 @@ class FloofApp extends StatelessWidget {
               }
               return child!;
             },
-            home: _FloofHome(window: window, l10nReady: l10n != null),
+            home: _FloofHome(window: window),
           );
         },
       ),
@@ -99,8 +98,7 @@ class FloofApp extends StatelessWidget {
 
 class _FloofHome extends StatelessWidget {
   final WindowOps window;
-  final bool l10nReady;
-  const _FloofHome({required this.window, required this.l10nReady});
+  const _FloofHome({required this.window});
 
   @override
   Widget build(BuildContext context) {

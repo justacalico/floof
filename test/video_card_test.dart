@@ -103,14 +103,15 @@ void main() {
 
   testWidgets('done flow skip records done', (tester) async {
     final state = await makeState();
-    await tester.pumpWidget(cardAppFor(makePost(id: 11), state));
+    final post = makePost(id: 11);
+    await tester.pumpWidget(cardAppFor(post, state));
     await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.check_circle_outline));
     await tester.pumpAndSettle();
     expect(find.text('Skip'), findsOneWidget);
     await tester.tap(find.text('Skip'));
     await tester.pumpAndSettle();
-    expect(state.isDone(11), isTrue);
+    expect(state.isDone(post), isTrue);
     expect(find.byIcon(Icons.check_circle), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
   });

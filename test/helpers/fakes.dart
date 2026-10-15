@@ -192,14 +192,14 @@ class FakeBooruClient extends BooruClient {
 
   @override
   Future<void> favorite(int postId) async {
-    if (throwOnFav) throw const BooruException('favorite failed', 500);
     favCalls++;
+    if (throwOnFav) throw const BooruException('favorite failed', 500);
   }
 
   @override
   Future<void> unfavorite(int postId) async {
-    if (throwOnFav) throw const BooruException('unfavorite failed', 500);
     unfavCalls++;
+    if (throwOnFav) throw const BooruException('unfavorite failed', 500);
   }
 
   @override

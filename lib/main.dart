@@ -1,13 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
+import 'platform/io_ops.dart' as io;
 import 'platform/platform_info.dart';
 import 'platform/window_ops.dart';
 import 'state/app_state.dart';
@@ -25,17 +23,12 @@ Future<void> main() async {
   }
 
   final prefs = await SharedPreferences.getInstance();
-  Directory docsDir;
-  try {
-    docsDir = await getApplicationDocumentsDirectory();
-  } on MissingPluginException {
-    docsDir = Directory.systemTemp;
-  }
+  final docsDir = await io.documentsDir();
   final appVersion = await resolveAppVersion();
 
   final state = AppState(
     prefs: prefs,
-    docsDir: docsDir.path,
+    docsDir: docsDir,
     now: DateTime.now,
     imagePicker: ImagePicker(),
   );

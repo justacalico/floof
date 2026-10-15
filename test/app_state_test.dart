@@ -70,7 +70,7 @@ void main() {
       expect(state.localeTag, 'ga');
       expect(state.contentRating, ContentRating.all);
       expect(state.engine.weights['g:fox'], 2.0);
-      expect(state.likedPostIds, {5});
+      expect(state.likedPostIds, {'5'});
       expect(state.ratingFilter, '');
     });
   });
@@ -234,7 +234,8 @@ void main() {
       expect(client.unfavCalls, 1);
       client.throwOnFav = true;
       await state.toggleLike(post);
-      expect(state.isLiked(post), isTrue);
+      expect(client.favCalls, 2);
+      expect(state.isLiked(post), isFalse);
     });
 
     test('markDone with and without photo', () async {
@@ -252,7 +253,7 @@ void main() {
       expect(fakes.imagePicker.calls, 1);
       expect(state.dones.first.photoPath, isNotNull);
       expect(File(state.dones.first.photoPath!).existsSync(), isTrue);
-      expect(state.isDone(5), isTrue);
+      expect(state.isDone(post), isTrue);
 
       fakes.imagePicker.nextFile = null;
       await state.markDone(makePost(id: 7));
@@ -274,13 +275,13 @@ void main() {
       final state = await makeState(docsDir: tmp.path);
       final src = File('${tmp.path}/src.jpg')
         ..writeAsBytesSync([1, 2, 3]);
-      final dest = await state.savePhoto(src);
+      final dest = await state.savePhoto(src.path);
       expect(dest, isNotNull);
       expect(File(dest!).existsSync(), isTrue);
       expect(dest, contains('done_'));
 
       final noDir = await makeState(docsDir: '');
-      expect(await noDir.savePhoto(src), isNull);
+      expect(await noDir.savePhoto(src.path), isNull);
     });
 
     test('clearHistory wipes both lists', () async {

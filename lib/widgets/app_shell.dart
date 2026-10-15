@@ -43,7 +43,11 @@ class AppShellState extends State<AppShell> {
         final wide = constraints.maxWidth >= 720;
         final content = IndexedStack(
           index: _index,
-          children: widget.pages,
+          children: [
+            for (var i = 0; i < widget.pages.length; i++)
+              TabScope(index: _index, active: i == _index,
+                  child: widget.pages[i]),
+          ],
         );
         if (wide) {
           return Material(
@@ -83,4 +87,22 @@ class AppShellState extends State<AppShell> {
       },
     );
   }
+}
+
+
+class TabScope extends InheritedWidget {
+  final int index;
+  final bool active;
+  const TabScope(
+      {super.key,
+      required this.index,
+      required this.active,
+      required super.child});
+
+  static TabScope? maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<TabScope>();
+
+  @override
+  bool updateShouldNotify(TabScope oldWidget) =>
+      active != oldWidget.active || index != oldWidget.index;
 }

@@ -160,7 +160,7 @@ void main() {
       expect(engine.weights['g:fox']! > 0, isTrue);
       expect(engine.weights['g:bird']! < 0, isTrue);
       expect(engine.weights['a:someartist']! > 0, isTrue);
-      expect(engine.seenPostIds, containsAll([1, 2]));
+      expect(engine.seenPostIds, containsAll(['https://e926.net#1', 'https://e926.net#2']));
       expect(engine.impressions, 0);
     });
 
@@ -201,11 +201,11 @@ void main() {
 
     test('seen list trims at cap', () {
       final engine = TasteEngine(
-        seenPostIds: List.generate(4000, (i) => i).toSet(),
+        seenPostIds: List.generate(4000, (i) => 'h#$i').toSet(),
       );
       engine.record(makePost(id: 9999), Signal.impression);
       expect(engine.seenPostIds.length, 4000);
-      expect(engine.seenPostIds.contains(9999), isTrue);
+      expect(engine.seenPostIds.contains('https://e926.net#9999'), isTrue);
     });
 
     test('json roundtrip', () {

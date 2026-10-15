@@ -39,7 +39,7 @@ class TasteEngine {
   };
 
   Map<String, double> weights;
-  final Set<int> seenPostIds;
+  final Set<String> seenPostIds;
   double baseline;
   int impressions;
   DateTime lastDecay;
@@ -47,7 +47,7 @@ class TasteEngine {
 
   TasteEngine({
     Map<String, double>? weights,
-    Set<int>? seenPostIds,
+    Set<String>? seenPostIds,
     this.baseline = 0,
     this.impressions = 0,
     DateTime? lastDecay,
@@ -67,7 +67,7 @@ class TasteEngine {
       impressions++;
       engagement = engagement * ratio.clamp(0, 1.5);
     }
-    _rememberSeen(post.id);
+    _rememberSeen(post.key);
 
     final delta = engagement - baseline;
     const lr = 0.35;
@@ -80,7 +80,7 @@ class TasteEngine {
     baseline += 0.06 * delta;
   }
 
-  void _rememberSeen(int id) {
+  void _rememberSeen(String id) {
     if (seenPostIds.length >= maxSeenRemembered && !seenPostIds.contains(id)) {
       final drop = seenPostIds.take(seenPostIds.length - maxSeenRemembered + 1)
           .toList();
@@ -118,7 +118,7 @@ class TasteEngine {
   }
 
   double noveltyBonus(Post post) {
-    if (seenPostIds.contains(post.id)) return -2.0;
+    if (seenPostIds.contains(post.key)) return -2.0;
     var bonus = 0.0;
     for (final artist in post.tags.artist) {
       if ((weights['a:$artist'] ?? 0).abs() < 0.01) bonus += 0.08;
@@ -203,8 +203,7 @@ class TasteEngine {
           ) ??
           {},
       seenPostIds: (json['seen'] as List?)
-              ?.whereType<num>()
-              .map((e) => e.toInt())
+              ?.map((e) => e.toString())
               .toSet() ??
           {},
       baseline: (json['baseline'] as num?)?.toDouble() ?? 0,

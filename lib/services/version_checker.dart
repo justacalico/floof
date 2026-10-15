@@ -11,10 +11,12 @@ class VersionChecker {
   static const releasesPage = 'https://gitlab.com/$projectPath/-/releases';
 
   final http.Client _client;
+  final bool _ownsClient;
   final String currentVersion;
 
   VersionChecker({required this.currentVersion, http.Client? client})
-      : _client = client ?? http.Client();
+      : _client = client ?? http.Client(),
+        _ownsClient = client == null;
 
   Future<AppUpdate?> latestRelease() async {
     final encoded = Uri.encodeComponent(projectPath);
@@ -60,6 +62,10 @@ class VersionChecker {
     } on FormatException {
       return UpdateCheckResult.failed;
     }
+  }
+
+  void dispose() {
+    if (_ownsClient) _client.close();
   }
 }
 

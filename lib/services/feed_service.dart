@@ -16,7 +16,8 @@ class FeedService {
 
   List<String> _queries = [];
   List<int> _lanePages = [];
-  final Set<int> _returnedIds = {};
+  final Set<String> _returnedKeys = {};
+  final Set<int> _laneDone = {};
   int _laneCursor = 0;
   bool _exhausted = false;
 
@@ -76,25 +77,34 @@ class FeedService {
         continue;
       }
       _lanePages[laneIdx] = page + 1;
-      if (posts.isEmpty) continue;
+      if (posts.isEmpty) {
+        _laneDone.add(laneIdx);
+        continue;
+      }
       candidates.addAll(posts.where(
-        (p) => p.isVideo && !_returnedIds.contains(p.id),
+        (p) => p.isVideo && !_returnedKeys.contains(p.key),
       ));
     }
     if (candidates.isEmpty) {
       if (lastError != null && seenLanes.length >= allLanes.length) {
         throw lastError;
       }
-      _exhausted = true;
+      _exhausted = _laneDone.length >= allLanes.length;
       return const [];
     }
-    final ranked = engine.rank(candidates, limit: batchSize);
-    _returnedIds.addAll(ranked.map((p) => p.id));
+    final deduped = <Post>[];
+    final batchKeys = <String>{};
+    for (final p in candidates) {
+      if (batchKeys.add(p.key)) deduped.add(p);
+    }
+    final ranked = engine.rank(deduped, limit: batchSize);
+    _returnedKeys.addAll(ranked.map((p) => p.key));
     return ranked;
   }
 
   void reset() {
-    _returnedIds.clear();
+    _returnedKeys.clear();
+    _laneDone.clear();
     _queries = [];
     _lanePages = [];
     _laneCursor = 0;

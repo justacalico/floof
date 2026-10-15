@@ -5,6 +5,7 @@ import 'package:video_player/video_player.dart';
 import '../l10n/app_localizations.dart';
 import '../models/post.dart';
 import '../state/app_state.dart';
+import 'app_shell.dart';
 import 'done_sheet.dart';
 
 class VideoCard extends StatefulWidget {
@@ -27,6 +28,8 @@ class VideoCardState extends State<VideoCard> {
   VideoPlayerController? _controller;
   bool _initStarted = false;
   bool _initFailed = false;
+  bool _everPlayed = false;
+  late String _profileId;
   final _watch = Stopwatch()..start();
   double get _watchedSeconds => _watch.elapsedMilliseconds / 1000;
   bool _reported = false;
@@ -34,15 +37,47 @@ class VideoCardState extends State<VideoCard> {
   @override
   void initState() {
     super.initState();
+    _profileId = widget.state.activeProfileId;
     if (widget.autofocus) _startPlayback();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final scope = TabScope.maybeOf(context);
+    if (scope != null && !scope.active) pausePlayback();
+  }
+
+  @override
+  void didUpdateWidget(VideoCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.post.key == widget.post.key) return;
+    reportWatch();
+    _controller?.dispose();
+    _controller = null;
+    _initStarted = false;
+    _initFailed = false;
+    _everPlayed = false;
+    _reported = false;
+    _watch.reset();
+    _profileId = widget.state.activeProfileId;
+    if (widget.autofocus) _startPlayback();
+  }
+
+  void pausePlayback() {
+    if (_controller?.value.isPlaying ?? false) {
+      _controller?.pause();
+      _watch.stop();
+    }
   }
 
   Future<void> _startPlayback() async {
     if (_initStarted) return;
     _initStarted = true;
     _watch.reset();
+    VideoPlayerController? controller;
     try {
-      final controller = VideoPlayerController.networkUrl(
+      controller = VideoPlayerController.networkUrl(
         Uri.parse(widget.post.playableUrl),
       );
       await controller.initialize();
@@ -52,22 +87,22 @@ class VideoCardState extends State<VideoCard> {
       }
       controller.setLooping(true);
       await controller.play();
+      _everPlayed = true;
       setState(() => _controller = controller);
     } catch (_) {
+      controller?.dispose();
       if (mounted) setState(() => _initFailed = true);
     }
   }
 
   void reportWatch({double? duration}) {
-    if (_reported) return;
+    if (_reported || !_everPlayed) return;
     _reported = true;
     _report(duration);
   }
 
   void _report(double? duration) {
-    final d = duration ??
-        _controller?.value.duration.inSeconds.toDouble() ??
-        widget.post.duration;
+    final d = duration ?? _controller?.value.duration.inSeconds.toDouble();
     final completed =
         d != null && d > 0 && _watchedSeconds >= d * 0.9;
     widget.state.recordWatch(
@@ -75,6 +110,7 @@ class VideoCardState extends State<VideoCard> {
       _watchedSeconds,
       d,
       completed,
+      profileId: _profileId,
     );
   }
 
@@ -107,16 +143,16 @@ class VideoCardState extends State<VideoCard> {
 
   @override
   void dispose() {
-    if (!_reported) {
+    if (!_reported && _everPlayed) {
       _reported = true;
       final state = widget.state;
       final post = widget.post;
       final watched = _watchedSeconds;
-      final d = _controller?.value.duration.inSeconds.toDouble() ??
-          widget.post.duration;
+      final d = _controller?.value.duration.inSeconds.toDouble();
       final completed = d != null && d > 0 && watched >= d * 0.9;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        state.recordWatch(post, watched, d, completed);
+        state.recordWatch(post, watched, d, completed,
+            profileId: _profileId);
       });
     }
     _controller?.dispose();
@@ -158,11 +194,11 @@ class VideoCardState extends State<VideoCard> {
                 ),
                 IconButton(
                   icon: Icon(
-                    widget.state.isDone(post.id)
+                    widget.state.isDone(post)
                         ? Icons.check_circle
                         : Icons.check_circle_outline,
                     color:
-                        widget.state.isDone(post.id) ? Colors.green : null,
+                        widget.state.isDone(post) ? Colors.green : null,
                   ),
                   tooltip: l10n.done,
                   onPressed: _markDone,
@@ -233,7 +269,15 @@ class VideoCardState extends State<VideoCard> {
       );
     }
     return InkWell(
-      onTap: _initFailed ? () {} : _startPlayback,
+      onTap: _initFailed
+          ? () {
+              setState(() {
+                _initStarted = false;
+                _initFailed = false;
+              });
+              _startPlayback();
+            }
+          : _startPlayback,
       child: Stack(
         fit: StackFit.expand,
         children: [

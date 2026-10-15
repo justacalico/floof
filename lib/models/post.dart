@@ -147,6 +147,8 @@ class Post {
 
   bool get isVideo => videoUrl != null || videoExts.contains(fileExt);
 
+  String get key => '$host#$id';
+
   String get playableUrl => videoMp4Url ?? videoUrl ?? fileUrl;
 
   String get thumbUrl => previewWebp ?? previewUrl ?? sampleUrl ?? fileUrl;
