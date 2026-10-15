@@ -26,8 +26,14 @@ rm -rf public
 gh run download "$RUN_ID" -R "$REPO" -n pages -D public
 test -f public/index.html
 
-if gh run download "$RUN_ID" -R "$REPO" -n flatpak-merged -D public/flatpak 2>/dev/null; then
-  echo "flatpak repo merged into public/flatpak"
-fi
+for attempt in 1 2 3; do
+  if gh run download "$RUN_ID" -R "$REPO" -n flatpak-merged -D public/flatpak; then
+    echo "flatpak repo merged into public/flatpak"
+    break
+  fi
+  echo "flatpak-merged download attempt $attempt failed" >&2
+  sleep 10
+done
 
 ls public
+ls public/flatpak 2>/dev/null || true
