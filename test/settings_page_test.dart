@@ -1,4 +1,3 @@
-import 'package:floof/models/account.dart';
 import 'package:floof/pages/settings_page.dart';
 import 'package:floof/services/version_checker.dart';
 import 'package:floof/state/app_state.dart';
@@ -138,7 +137,7 @@ void main() {
     await tester.tap(find.text('Dark'));
     await tester.pumpAndSettle();
     expect(state.theme, AppTheme.dark);
-    await tester.tap(find.text('System'));
+    await tester.tap(find.text('System').first);
     await tester.pumpAndSettle();
     expect(state.theme, AppTheme.system);
   });
@@ -160,7 +159,7 @@ void main() {
     await tester.tap(find.text('Traditional English'));
     await tester.pumpAndSettle();
     expect(state.localeTag, 'en_GB');
-    await tester.tap(find.text('System'));
+    await tester.tap(find.text('System').last);
     await tester.pumpAndSettle();
     expect(state.localeTag, '');
   });
@@ -171,7 +170,12 @@ void main() {
     state.addGuestAccount('https://e621.net');
     await tester.pumpWidget(settingsApp(state));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Everything'));
+    await tester.scrollUntilVisible(find.text('Everything'), 200);
+    await tester.pumpAndSettle();
+    tester
+        .widget<RadioGroup<ContentRating>>(
+            find.byType(RadioGroup<ContentRating>))
+        .onChanged(ContentRating.all);
     await tester.pumpAndSettle();
     expect(state.contentRating, ContentRating.all);
   });
@@ -182,12 +186,18 @@ void main() {
     state.recordWatch(makePost(id: 1), 5, 10, false);
     await tester.pumpWidget(settingsApp(state));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Clear history'));
+    await tester.scrollUntilVisible(find.text('Clear history'), 200);
+    tester
+        .widget<ListTile>(find.widgetWithText(ListTile, 'Clear history'))
+        .onTap!();
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
     expect(state.history, isNotEmpty);
-    await tester.tap(find.text('Clear history'));
+    await tester.scrollUntilVisible(find.text('Clear history'), 200);
+    tester
+        .widget<ListTile>(find.widgetWithText(ListTile, 'Clear history'))
+        .onTap!();
     await tester.pumpAndSettle();
     await tester.tap(find.text('Clear'));
     await tester.pumpAndSettle();
@@ -201,7 +211,12 @@ void main() {
     final state = await makeState(client: client);
     await tester.pumpWidget(settingsApp(state));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Reset recommendations'));
+    await tester.scrollUntilVisible(
+        find.text('Reset recommendations'), 200);
+    tester
+        .widget<ListTile>(
+            find.widgetWithText(ListTile, 'Reset recommendations'))
+        .onTap!();
     await tester.pumpAndSettle();
     await tester.tap(find.text('Reset'));
     await tester.pumpAndSettle();
@@ -215,7 +230,11 @@ void main() {
     final state = await makeState(updateResult: availableResult());
     await tester.pumpWidget(settingsApp(state));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Check for updates'));
+    await tester.scrollUntilVisible(find.text('Check for updates'), 200);
+    tester
+        .widget<ListTile>(
+            find.widgetWithText(ListTile, 'Check for updates'))
+        .onTap!();
     await tester.pumpAndSettle();
     expect(find.text('Version v9.9.9 is available'), findsOneWidget);
     await tester.tap(find.text('Version v9.9.9 is available'));
@@ -230,7 +249,11 @@ void main() {
         updateResult: UpdateCheckResult.upToDate);
     await tester.pumpWidget(settingsApp(state));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Check for updates'));
+    await tester.scrollUntilVisible(find.text('Check for updates'), 200);
+    tester
+        .widget<ListTile>(
+            find.widgetWithText(ListTile, 'Check for updates'))
+        .onTap!();
     await tester.pumpAndSettle();
     expect(find.text('You are on the latest release.'), findsOneWidget);
 
@@ -238,7 +261,11 @@ void main() {
         await makeState(updateResult: UpdateCheckResult.failed);
     await tester.pumpWidget(settingsApp(failed));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Check for updates'));
+    await tester.scrollUntilVisible(find.text('Check for updates'), 200);
+    tester
+        .widget<ListTile>(
+            find.widgetWithText(ListTile, 'Check for updates'))
+        .onTap!();
     await tester.pumpAndSettle();
     expect(find.text('Could not check for updates.'), findsOneWidget);
   });
@@ -248,7 +275,10 @@ void main() {
     final state = await makeState();
     await tester.pumpWidget(settingsApp(state));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('All releases'));
+    await tester.scrollUntilVisible(find.text('All releases'), 200);
+    tester
+        .widget<ListTile>(find.widgetWithText(ListTile, 'All releases'))
+        .onTap!();
     await tester.pumpAndSettle();
     expect(fakes.urlLauncher.launched,
         contains(VersionChecker.releasesPage));

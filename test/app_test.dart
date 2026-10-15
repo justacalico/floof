@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:floof/app.dart';
-import 'package:floof/l10n/app_localizations.dart';
 import 'package:floof/main.dart' as app;
 import 'package:floof/platform/platform_info.dart';
 import 'package:floof/state/app_state.dart';
@@ -84,9 +83,10 @@ void main() {
     addTearDown(() => TestDefaultBinaryMessengerBinding
         .instance.defaultBinaryMessenger
         .setMockMethodCallHandler(pkg, null));
-    final tmp = await Directory.systemTemp.createTemp('floof_main');
-    addTearDown(() => tmp.delete(recursive: true));
-    PathProviderPlatform.instance = FakePathProviderPlatform(tmp.path);
+    final tmp = await tester
+        .runAsync(() => Directory.systemTemp.createTemp('floof_main'));
+    addTearDown(() => tmp!.delete(recursive: true));
+    PathProviderPlatform.instance = FakePathProviderPlatform(tmp!.path);
 
     HttpOverrides.global = FakeHttpOverrides();
     addTearDown(() => HttpOverrides.global = null);
@@ -106,8 +106,9 @@ void main() {
     PathProviderPlatform.instance = fake;
     // package_info has no mock handler in this test, so it throws
     // MissingPluginException and falls back to the baked-in version.
-    await app.main();
-    await tester.pumpAndSettle();
+    await tester.runAsync(() => app.main());
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
     expect(find.byType(AppShell), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
   });

@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:floof/l10n/app_localizations.dart';
-import 'package:floof/models/post.dart';
 import 'package:floof/pages/history_page.dart';
 import 'package:floof/pages/home_page.dart';
 import 'package:floof/pages/profiles_page.dart';
@@ -137,7 +136,8 @@ void main() {
       await tester.enterText(find.byType(TextField), 'wolf');
       await tester.testTextInput.receiveAction(TextInputAction.search);
       await tester.pumpAndSettle();
-      await tester.tap(find.byType(InkWell).first);
+      await tester.tap(find.descendant(
+          of: find.byType(GridView), matching: find.byType(Card)));
       await tester.pumpAndSettle();
       expect(find.byType(ViewerPage), findsOneWidget);
       expect(find.text('#55'), findsOneWidget);
@@ -260,9 +260,10 @@ void main() {
 
     testWidgets('shows entries grouped by day and clears', (tester) async {
       setViewSize(tester);
-      final tmp = await Directory.systemTemp.createTemp('floof_hist');
-      addTearDown(() => tmp.delete(recursive: true));
-      final shot = File('${tmp.path}/shot.jpg')
+      final tmp = await tester
+          .runAsync(() => Directory.systemTemp.createTemp('floof_hist'));
+      addTearDown(() => tmp!.delete(recursive: true));
+      final shot = File('${tmp!.path}/shot.jpg')
         ..writeAsBytesSync(transparentPng);
       fakes.imagePicker.nextFile = XFile(shot.path);
       final state = await makeState(
@@ -271,7 +272,7 @@ void main() {
       );
       state.recordWatch(makePost(id: 1), 12, 12, true);
       state.recordWatch(makePost(id: 2), 3, 12, false);
-      await state.markDone(makePost(id: 3));
+      await tester.runAsync(() => state.markDone(makePost(id: 3)));
       await tester.pumpWidget(pageApp(const HistoryPage(), state));
       await tester.pumpAndSettle();
       expect(find.textContaining('Done at'), findsOneWidget);

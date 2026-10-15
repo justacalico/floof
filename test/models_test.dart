@@ -136,7 +136,7 @@ void main() {
   group('Version', () {
     test('parses and compares', () {
       expect(Version.tryParse('v1.2.3')!.toString(), '1.2.3');
-      expect(Version.tryParse('1.2.3-4'), isNull);
+      expect(Version.tryParse('1.2.3-4')!.prerelease, '4');
       expect(Version.tryParse('1.2.3-rc.1')!.prerelease, 'rc.1');
       expect(Version.tryParse('junk'), isNull);
       expect(const Version(1, 0, 0).compareTo(const Version(1, 0, 1)) < 0, isTrue);
@@ -195,7 +195,7 @@ void main() {
       engine.applyDecay(DateTime.now().subtract(const Duration(days: 1)));
       expect(engine.lastDecay.isAfter(DateTime(2020)), isTrue);
       engine.weights['g:tiny'] = 0.0005;
-      engine.applyDecay(DateTime.now().add(const Duration(days: 1)));
+      engine.applyDecay(DateTime.now().add(const Duration(days: 31)));
       expect(engine.weights.containsKey('g:tiny'), isFalse);
     });
 
@@ -262,6 +262,7 @@ void main() {
       final feed = FeedService(client: client, engine: engine);
       final batch = await feed.nextBatch(batchSize: 4);
       expect(batch.map((p) => p.id).toSet(), {1, 2});
+      client.laterPosts = [makePost(id: 7)];
       final more = await feed.nextBatch(batchSize: 4);
       expect(more, isNotEmpty);
       feed.reset();
@@ -283,8 +284,8 @@ void main() {
       final batch = await feed.nextBatch(batchSize: 2);
       expect(batch, isNotEmpty);
       client.throwOnSearch = true;
-      final empty = await feed.nextBatch(batchSize: 2);
-      expect(empty, isEmpty);
+      expect(feed.nextBatch(batchSize: 2),
+          throwsA(isA<BooruException>()));
     });
 
     test('lanes include learned tags', () {

@@ -127,19 +127,26 @@ Post makePost({
   List<String> species = const ['wolf'],
   int favs = 10,
   int scoreUp = 20,
+  double? duration,
   String host = 'https://e926.net',
 }) {
-  return Post.fromJson(
-    postJson(
-      id: id,
-      general: general,
-      artist: artist,
-      species: species,
-      favs: favs,
-      scoreUp: scoreUp,
-    ),
-    host: host,
+  final json = postJson(
+    id: id,
+    general: general,
+    artist: artist,
+    species: species,
+    favs: favs,
+    scoreUp: scoreUp,
   );
+  if (duration != null) {
+    (json['files'] as Map)['meta'] = {
+      'ext': 'webm',
+      'size': 1000,
+      'duration': duration,
+      'has_sample': true,
+    };
+  }
+  return Post.fromJson(json, host: host);
 }
 
 class FakeBooruClient extends BooruClient {
@@ -147,6 +154,7 @@ class FakeBooruClient extends BooruClient {
       : posts = posts ?? [makePost(id: 1)];
 
   List<Post> posts;
+  List<Post>? laterPosts;
   final List<TagSuggestion> suggestions;
   bool verifyResult = true;
   bool throwOnVerify = false;
@@ -163,13 +171,18 @@ class FakeBooruClient extends BooruClient {
     if (throwOnSearch) throw const BooruException('search failed', 500);
     lastSearchTags = tags;
     lastPage = page;
-    if (page > 1) return const [];
+    if (page > 1) return laterPosts ?? const [];
     return posts;
   }
 
+  bool throwOnAutocomplete = false;
+
   @override
-  Future<List<TagSuggestion>> autocomplete(String term, {int limit = 8}) async =>
-      suggestions;
+  Future<List<TagSuggestion>> autocomplete(String term,
+      {int limit = 8}) async {
+    if (throwOnAutocomplete) throw const BooruException('tags failed', 500);
+    return suggestions;
+  }
 
   @override
   Future<bool> verifyLogin() async {
@@ -238,6 +251,8 @@ class FakeWindowOps implements WindowOps {
 class FakeVideoPlayerPlatform extends VideoPlayerPlatform {
   int _next = 0;
   bool throwOnCreate = false;
+  Size initSize = const Size(800, 450);
+  Completer<void>? createGate;
   final Map<int, StreamController<VideoEvent>> streams = {};
   int playCalls = 0;
   int pauseCalls = 0;
@@ -253,12 +268,13 @@ class FakeVideoPlayerPlatform extends VideoPlayerPlatform {
   Future<int?> createWithOptions(VideoCreationOptions options) async {
     if (throwOnCreate) throw StateError('create failed');
     creates++;
+    if (createGate != null) await createGate!.future;
     final id = _next++;
     streams[id] = StreamController<VideoEvent>();
     streams[id]!.add(VideoEvent(
       eventType: VideoEventType.initialized,
       duration: const Duration(seconds: 12),
-      size: const Size(800, 450),
+      size: initSize,
     ));
     return id;
   }
@@ -369,8 +385,11 @@ class _FakeHttpClientRequest implements HttpClientRequest {
 }
 
 class _FakeHttpClientResponse implements HttpClientResponse {
+  _FakeHttpClientResponse(this.bytes);
+  final List<int> bytes;
+
   @override
-  int get contentLength => transparentPng.length;
+  int get contentLength => bytes.length;
 
   @override
   int get statusCode => 200;
@@ -382,7 +401,7 @@ class _FakeHttpClientResponse implements HttpClientResponse {
   @override
   StreamSubscription<List<int>> listen(void Function(List<int>)? onData,
       {Function? onError, void Function()? onDone, bool? cancelOnError}) {
-    return Stream<List<int>>.fromIterable([transparentPng]).listen(onData,
+    return Stream<List<int>>.fromIterable([bytes]).listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
@@ -391,17 +410,29 @@ class _FakeHttpClientResponse implements HttpClientResponse {
 }
 
 class FakeHttpClient implements HttpClient {
+  FakeHttpClient([this.bytes = transparentPng]);
+  final List<int> bytes;
+
+  @override
+  bool autoUncompress = true;
+
+  @override
+  Duration idleTimeout = const Duration(seconds: 15);
+
   @override
   Future<HttpClientRequest> getUrl(Uri url) async =>
-      _FakeHttpClientRequest(_FakeHttpClientResponse());
+      _FakeHttpClientRequest(_FakeHttpClientResponse(bytes));
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class FakeHttpOverrides extends HttpOverrides {
+  FakeHttpOverrides([this.bytes = transparentPng]);
+  final List<int> bytes;
+
   @override
-  HttpClient createHttpClient(SecurityContext? context) => FakeHttpClient();
+  HttpClient createHttpClient(SecurityContext? context) => FakeHttpClient(bytes);
 }
 
 class FakeAccount extends Account {
