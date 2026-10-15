@@ -45,7 +45,6 @@ jobs:
       version: ${{ steps.meta.outputs.version }}
       build_number: ${{ steps.meta.outputs.build_number }}
       build_all: ${{ steps.meta.outputs.build_all }}
-      targets: ${{ steps.meta.outputs.targets }}
     steps:
       - uses: actions/checkout@v4
       - name: Read version and build metadata
@@ -58,15 +57,9 @@ jobs:
           else
             BUILD_ALL="true"
           fi
-          if [ "$BUILD_ALL" = "true" ]; then
-            TARGETS='[{"target":"android","os":"ubuntu-latest"},{"target":"linux","os":"ubuntu-latest"},{"target":"linux-arm64","os":"ubuntu-24.04-arm"},{"target":"windows","os":"windows-latest"},{"target":"windows-arm64","os":"windows-11-arm"},{"target":"macos","os":"macos-latest"},{"target":"ios","os":"macos-latest"},{"target":"web","os":"ubuntu-latest"}]'
-          else
-            TARGETS='[{"target":"web","os":"ubuntu-latest"}]'
-          fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "build_number=$BUILD_NUMBER" >> "$GITHUB_OUTPUT"
           echo "build_all=$BUILD_ALL" >> "$GITHUB_OUTPUT"
-          echo "targets=$TARGETS" >> "$GITHUB_OUTPUT"
 
   verify:
     name: Verify app
@@ -115,11 +108,20 @@ jobs:
   build:
     name: Build ${{ matrix.target }}
     needs: [setup, verify]
+    if: ${{ needs.setup.outputs.build_all == 'true' || matrix.target == 'web' }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        target: ${{ fromJSON(needs.setup.outputs.targets) }}
+        include:
+          - {target: android, os: ubuntu-latest}
+          - {target: linux, os: ubuntu-latest}
+          - {target: linux-arm64, os: ubuntu-24.04-arm}
+          - {target: windows, os: windows-latest}
+          - {target: windows-arm64, os: windows-11-arm}
+          - {target: macos, os: macos-latest}
+          - {target: ios, os: macos-latest}
+          - {target: web, os: ubuntu-latest}
     env:
       VERSION: ${{ needs.setup.outputs.version }}
       BUILD_NUMBER: ${{ needs.setup.outputs.build_number }}
