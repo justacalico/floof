@@ -317,6 +317,7 @@ jobs:
           echo "${{ secrets.FLATPAK_GPG_KEY }}" | base64 -d | gpg --batch --homedir "$HOME/.gpg" --import
           KEYID="${{ secrets.FLATPAK_GPG_KEY_ID }}"
           for d in fp-repos/*/; do
+            mkdir -p "$d/refs/remotes"
             ostree --repo=flatpak-merged pull-local "$d"
           done
           flatpak build-update-repo --gpg-sign="$KEYID" --gpg-homedir="$HOME/.gpg" --generate-static-deltas flatpak-merged
