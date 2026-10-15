@@ -1,0 +1,24 @@
+{
+  "name": "floof",
+  "identifier": "gitlab.httpanimations.floof",
+  "sourceURL": "https://gitlab.com/HttpAnimations/floof/-/raw/main/repos/altstore.json",
+  "apps": [
+    {
+      "name": "floof",
+      "bundleIdentifier": "gitlab.httpanimations.floof",
+      "developerName": "HttpAnimations",
+      "localizedDescription": "An e926 video client with a feed that learns what you like, entirely on your device.",
+      "iconURL": "https://gitlab.com/HttpAnimations/floof/-/raw/main/assets/icon_512.png",
+      "tintColor": "FFB347",
+      "versions": [],
+      "appPermissions": {
+        "photos": "Used to attach a photo when you mark a video as done.",
+        "camera": [
+          {
+            "NSCameraUsageDescription": "Used to take a photo when you mark a video as done."
+          }
+        ]
+      }
+    }
+  ]
+}
